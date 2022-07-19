@@ -1,0 +1,1321 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     55451,       1313]
+NotebookOptionsPosition[     50027,       1194]
+NotebookOutlinePosition[     51400,       1233]
+CellTagsIndexPosition[     51323,       1228]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Synthetic college community", "Title",
+ CellChangeTimes->{{3.8585304294565945`*^9, 
+  3.8585304329266033`*^9}},ExpressionUUID->"acc1ea73-d60d-4b01-84cb-\
+adf3163a676d"],
+
+Cell["DG", "Subtitle",
+ CellChangeTimes->{{3.858530480667835*^9, 
+  3.858530480995883*^9}},ExpressionUUID->"25df4907-e4a2-4f4f-8d58-\
+1043e7afe25d"],
+
+Cell[CellGroupData[{
+
+Cell["Synthetic college community", "Subsection",
+ CellChangeTimes->{{3.8359183814583883`*^9, 3.8359183874155083`*^9}},
+ CellID->198915662,ExpressionUUID->"ff0d0143-2f4e-43d1-adfd-89b0c8bf758c"],
+
+Cell[TextData[{
+ "The key inputs for generating a synthetic college include (i) student body \
+(could be stratified by the  year of study, e.g. freshman-sophomore, \
+junior-senior etc), (ii) credit hour requirement (e.g. 3 \
+classes/student/semester), (iii) mean class size and size distribution, \
+described by relative weights, e.g. ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["w", "S"], "=", "1"}], TraditionalForm]],ExpressionUUID->
+  "403928e0-928d-41e9-8419-ecd05276c094"],
+ " (small class), to ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["w", "L"], "=", "20"}], TraditionalForm]],ExpressionUUID->
+  "6ddb9ccb-707c-4b75-9497-c638179555d3"],
+ " (large class); (iii) classroom occupancy (% of occupied seats) ; (iv) \
+weekly class schedules, e.g. MWF (Monday-Wednesday-Friday), TuTh \
+(Tuesday-Thursday). Additional inputs include  dorm residence: fraction of \
+student residing on campus and dorm unit sizes. \nGiven such inputs, the code \
+will generate a complete class schedule, i.e. a consistent class roster \
+whereby each student is assigned to 3 non-overlapping classes, each class \
+enrollment is approximately proportional to its \[OpenCurlyQuote]popularity \
+weight\[CloseCurlyQuote]. Furthermore, each class has a weekly schedule and a \
+classroom of sufficient capacity (not to exceed 80% seat occupancy), and each \
+student is assigned a permanent seat in the classroom."
+}], "Text",
+ CellChangeTimes->{
+  3.830438756149741*^9, {3.8362474187272587`*^9, 3.8362474354172115`*^9}, {
+   3.8362475165639286`*^9, 3.8362475423613167`*^9}, {3.836322674877688*^9, 
+   3.836322889460605*^9}, {3.836322921940366*^9, 3.836323297508901*^9}, {
+   3.8363233353975706`*^9, 3.8363235399387555`*^9}, {3.8363235832356215`*^9, 
+   3.8363236917002687`*^9}, {3.836324552650714*^9, 3.836324554981075*^9}, {
+   3.8363246105980577`*^9, 3.836324821830351*^9}, {3.8363248542456903`*^9, 
+   3.8363250107383046`*^9}, {3.836325289177683*^9, 3.836325599143055*^9}, {
+   3.8364015158912735`*^9, 3.836401675010812*^9}, {3.836401706007984*^9, 
+   3.8364019024179635`*^9}, {3.8364019422285376`*^9, 3.836402127506184*^9}, {
+   3.8432381964791145`*^9, 3.8432382182702913`*^9}, {3.8432382512945075`*^9, 
+   3.843238330619254*^9}, {3.8432453107801123`*^9, 3.8432453451369495`*^9}, 
+   3.8670766887762747`*^9, {3.8670767225957713`*^9, 3.867076771769311*^9}, 
+   3.867147660196986*^9},
+ CellID->655908605,ExpressionUUID->"df0c50ef-0802-46d4-9417-b3d02256c458"],
+
+Cell[CellGroupData[{
+
+Cell["Class roster and schedule", "Subsubsection",
+ CellChangeTimes->{{3.828022886349118*^9, 3.828022890980702*^9}, {
+   3.830438723431752*^9, 3.8304387235340548`*^9}, {3.8323471783925447`*^9, 
+   3.832347182089614*^9}, {3.832347489495639*^9, 3.832347502808096*^9}, {
+   3.8362494751860914`*^9, 3.8362494845251637`*^9}, 3.8363245887384214`*^9, {
+   3.8363329493342323`*^9, 3.836332958086836*^9}},
+ CellID->377402036,ExpressionUUID->"134be474-1115-43e8-9f07-554b24c080e4"],
+
+Cell[TextData[{
+ "We begin by generating ",
+ StyleBox["class enrollment",
+  FontSlant->"Italic"],
+ " and ",
+ StyleBox["schedule",
+  FontSlant->"Italic"],
+ ",  from a few basic inputs: student body,  average class size, and \
+class-size distribution. In the example below, each student take 3 courses \
+per semester."
+}], "Text",
+ CellChangeTimes->{{3.827998439427587*^9, 3.827998527707405*^9}, {
+   3.827998592886747*^9, 3.82799860847324*^9}, {3.827998962821817*^9, 
+   3.827998980469865*^9}, {3.8280001884877977`*^9, 3.828000204292922*^9}, {
+   3.828000307958693*^9, 3.828000353627899*^9}, {3.828000493312427*^9, 
+   3.828000647774*^9}, {3.828000737506075*^9, 3.8280007703109426`*^9}, {
+   3.828000858412385*^9, 3.828000878797083*^9}, {3.828000909309257*^9, 
+   3.828000979410479*^9}, {3.828001028931533*^9, 3.8280010822328*^9}, {
+   3.828001228215467*^9, 3.828001411028734*^9}, {3.828001445499998*^9, 
+   3.828001582919673*^9}, {3.828001626920423*^9, 3.82800166820784*^9}, {
+   3.828001747071011*^9, 3.8280018023438597`*^9}, {3.828001861418496*^9, 
+   3.8280020985479097`*^9}, {3.828002341376539*^9, 3.828002528204256*^9}, {
+   3.82800262058529*^9, 3.828002699802713*^9}, {3.8280028363607187`*^9, 
+   3.828002882390774*^9}, {3.828003157189838*^9, 3.8280031686636763`*^9}, {
+   3.82800322242765*^9, 3.8280034683449993`*^9}, {3.8280035075066833`*^9, 
+   3.828003510509942*^9}, {3.828005183753419*^9, 3.828005203082951*^9}, 
+   3.828016090222065*^9, {3.8280162363598347`*^9, 3.828016238967787*^9}, {
+   3.830438753983666*^9, 3.83043876007067*^9}, {3.832347221817385*^9, 
+   3.8323472830017843`*^9}, {3.8363256820364385`*^9, 
+   3.8363256927238536`*^9}, {3.836401437764062*^9, 3.8364014795374107`*^9}, {
+   3.836402146355797*^9, 3.8364021953797293`*^9}, {3.836495075311324*^9, 
+   3.8364950765779295`*^9}, 3.8364953953283625`*^9, 3.836495672813504*^9, {
+   3.8364957116925583`*^9, 3.8364957411827574`*^9}, 3.83649580316503*^9, {
+   3.8670768009103274`*^9, 3.8670768011600714`*^9}},
+ CellID->1940041763,ExpressionUUID->"779de1e3-118b-49b4-8ca1-f83b52a6638c"],
+
+Cell[TextData[{
+ "Every class is assigned its popularity weight which determines class \
+enrollment. Any weight function can be used; in examples below, we employ a \
+simple linear function in the range ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"1", "<=", "w", "<=", 
+    SubscriptBox["w", "max"]}], TraditionalForm]],ExpressionUUID->
+  "958dc621-71d2-479b-a44d-ba0f3d1823db"],
+ " - ratio of \[OpenCurlyQuote]large\[CloseCurlyQuote] to \
+\[OpenCurlyQuote]small\[CloseCurlyQuote] class size.\n",
+ StyleBox["Weekly class schedule. ",
+  FontWeight->"Bold"],
+ "Commonly used schedules include Mondays - Wednesdays - Fridays (MWF), \
+Tuesdays-Thursdays (TTh),  with prescribed time-grid, e.g. 7 time slots MWF, \
+and 5 TTh . Class time slots are used for generating conflict-free student \
+schedules, but they play no role in the transmission dynamics, and they are \
+not stored in the final class schedule.  An additional input is a fraction \
+MWF classes vs. TTh classes etc., e.g. 60% MWF and 40% TTh. Classes represent \
+an important part of ",
+ StyleBox["scheduled social mixing",
+  FontSlant->"Italic"],
+ " . "
+}], "Text",
+ CellChangeTimes->{{3.8364954012106657`*^9, 3.8364955094373198`*^9}, {
+   3.8364955404364223`*^9, 3.8364955605127783`*^9}, {3.836495826318138*^9, 
+   3.836495878143589*^9}, 3.836735014220376*^9, {3.8670768405790005`*^9, 
+   3.867076847526046*^9}},
+ CellID->25937581,ExpressionUUID->"9202af42-e8c9-49d2-aeab-bd67ff6d8f0b"],
+
+Cell[TextData[{
+ "The extended schedule augments each class schedule in the list with \
+\[OpenCurlyQuote]popularity weights\[CloseCurlyQuote] (approximate \
+class-size), assuming linear weight scale ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"1", "<=", "w", "<=", "10"}], TraditionalForm]],ExpressionUUID->
+  "1d571aea-3060-43bc-91db-a042fe7e13f5"]
+}], "Text",
+ CellChangeTimes->{{3.827998439427587*^9, 3.827998527707405*^9}, {
+   3.827998592886747*^9, 3.82799860847324*^9}, {3.827998962821817*^9, 
+   3.827998980469865*^9}, {3.8280001884877977`*^9, 3.828000204292922*^9}, {
+   3.828000307958693*^9, 3.828000353627899*^9}, {3.828000493312427*^9, 
+   3.828000647774*^9}, {3.828000737506075*^9, 3.8280007703109426`*^9}, {
+   3.828000858412385*^9, 3.828000878797083*^9}, {3.828000909309257*^9, 
+   3.828000979410479*^9}, {3.828001028931533*^9, 3.8280010822328*^9}, {
+   3.828001228215467*^9, 3.828001411028734*^9}, {3.828001445499998*^9, 
+   3.828001582919673*^9}, {3.828001626920423*^9, 3.82800166820784*^9}, {
+   3.828001747071011*^9, 3.8280018023438597`*^9}, {3.828001861418496*^9, 
+   3.8280020985479097`*^9}, {3.828002341376539*^9, 3.828002528204256*^9}, {
+   3.82800262058529*^9, 3.828002699802713*^9}, {3.8280028363607187`*^9, 
+   3.828002882390774*^9}, {3.828003157189838*^9, 3.8280031686636763`*^9}, {
+   3.82800322242765*^9, 3.8280034683449993`*^9}, {3.8280035075066833`*^9, 
+   3.828003510509942*^9}, {3.828005183753419*^9, 3.828005203082951*^9}, {
+   3.828016234976673*^9, 3.828016262998907*^9}, 3.828016394591173*^9, {
+   3.828016892645629*^9, 3.828016937120673*^9}, {3.834082167403721*^9, 
+   3.834082168611704*^9}, {3.8364028874787903`*^9, 3.8364029569194403`*^9}, {
+   3.8420338820837803`*^9, 3.842033934454734*^9}, {3.842614069288478*^9, 
+   3.842614196643819*^9}},
+ CellID->1118430415,ExpressionUUID->"32bd941c-6167-496a-8ac9-d6ca68cb9d09"],
+
+Cell["\<\
+A time slot is a daily period for the class. Each weekly class schedule, e.g. \
+MWF, is augmented by its daily period/time slot (1-7 for 1-hour sessions MWF, \
+and 1-5 for 1.5 hour sessions TuTh). Those are important for generating a \
+consistent student schedule and class roster.\
+\>", "Text",
+ CellChangeTimes->{{3.8420339938052864`*^9, 3.842034232091978*^9}, {
+  3.8420343144117403`*^9, 3.8420343337759194`*^9}, {3.8426142361112013`*^9, 
+  3.8426144273615327`*^9}, {3.8671478013152533`*^9, 3.867147828123*^9}},
+ Background->RGBColor[0.87, 0.94, 1],
+ CellID->60639511,ExpressionUUID->"946e9a98-dbef-4eba-8f7b-1e7c61f1ac94"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Codes: Class roster and schedule", "Subsection",
+ CellChangeTimes->{{3.828022886349118*^9, 3.828022890980702*^9}, {
+   3.830438723431752*^9, 3.8304387235340548`*^9}, {3.8323471783925447`*^9, 
+   3.832347182089614*^9}, {3.832347489495639*^9, 3.832347502808096*^9}, {
+   3.8362494751860914`*^9, 3.8362494845251637`*^9}, 3.8363245887384214`*^9, {
+   3.8363329493342323`*^9, 3.836332958086836*^9}, {3.8585304735805607`*^9, 
+   3.8585304765739737`*^9}},
+ CellID->1514486586,ExpressionUUID->"373bddcf-29ff-4c51-85e3-6e5833fde6be"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Class", " ", "weight"}], " ", "+", " ", 
+     RowBox[{
+     "weekly", " ", "timeslot", " ", "distribution", " ", "for", " ", "list", 
+      " ", "CL"}]}], ",", " ", 
+    RowBox[{
+     RowBox[{"week", " ", "timegrid"}], " ", "=", " ", "wtg"}], ",", " ", 
+    RowBox[{
+     RowBox[{"relative", " ", "max", " ", "weight"}], "=", "wM"}]}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"CWeiD", "[", 
+     RowBox[{"CL_", ",", "wtg_", ",", "wM_"}], "]"}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"MapIndexed", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"1", "+", 
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"wM", "-", "1"}], ")"}], 
+           FractionBox[
+            RowBox[{
+             RowBox[{"#2", "[", 
+              RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], 
+            RowBox[{
+             RowBox[{"Length", "@", "CL"}], "-", "1"}]]}]}], ",", "#", ",", 
+         RowBox[{"wtg", "[", 
+          RowBox[{"[", 
+           RowBox[{"1", "+", 
+            RowBox[{"Mod", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"#2", "[", 
+                RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], ",", 
+              RowBox[{"Length", "@", "wtg"}]}], "]"}]}], "]"}], "]"}]}], 
+        "}"}], "&"}], ",", "CL"}], "]"}]}], "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Code", " ", "for", " ", "weekly"}], "-", 
+     RowBox[{
+     "daily", " ", "class", " ", "schedule", " ", "with", " ", "assigned", 
+      " ", "popularity", " ", "weights"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"WeekDayS", "[", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"class", " ", "list"}], "*)"}], 
+     RowBox[{"cL_", ",", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"MWF", " ", "timeslots"}], " ", "*)"}], "tmw_", ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"TuTh", " ", "timeslots"}], " ", "*)"}], "tth_", ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"max", " ", "class", " ", "weight"}], "*)"}], "wM_", ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"MWF", " ", "fraction", " ", "of", " ", "classes"}], "*)"}], 
+      "fM_"}], "]"}], ":=", "\[IndentingNewLine]", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Nm", "=", 
+         RowBox[{"Round", "[", 
+          RowBox[{"fM", " ", 
+           RowBox[{"Length", "@", "cL"}]}], "]"}]}], ",", "MW", ",", "TH"}], 
+       "}"}], ",", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"MW", "-", "classes"}], "*)"}], 
+      RowBox[{
+       RowBox[{"MW", "=", 
+        RowBox[{"cL", "[", 
+         RowBox[{"[", 
+          RowBox[{";;", "Nm"}], "]"}], "]"}]}], ";", "\n", 
+       RowBox[{"(*", 
+        RowBox[{"TH", "-", "classes"}], "*)"}], 
+       RowBox[{"TH", "=", 
+        RowBox[{"Complement", "[", 
+         RowBox[{"cL", ",", "MW"}], "]"}]}], ";", "\n", 
+       RowBox[{"Join", "[", 
+        RowBox[{
+         RowBox[{"CWeiD", "[", 
+          RowBox[{"MW", ",", "tmw", ",", "wM"}], "]"}], ",", 
+         RowBox[{"CWeiD", "[", 
+          RowBox[{"TH", ",", "tth", ",", "wM"}], "]"}]}], "]"}]}]}], 
+     "]"}]}]}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{{3.8585343949648294`*^9, 3.8585344105939536`*^9}, {
+   3.8585344502148995`*^9, 3.8585346377573104`*^9}, {3.8585347725440893`*^9, 
+   3.8585348048852854`*^9}, {3.8585348548535175`*^9, 
+   3.8585348609122815`*^9}, {3.8585349504837494`*^9, 3.858535212315462*^9}, {
+   3.8585352548024015`*^9, 3.858535259123267*^9}, {3.858535301959779*^9, 
+   3.8585353176741524`*^9}, {3.85853536086444*^9, 3.8585353632124276`*^9}, {
+   3.858535851930476*^9, 3.8585358521672306`*^9}, 3.8585358909818387`*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"c92c863f-7d8f-4721-95b6-3cca9af6376b"],
+
+Cell["\<\
+Next we let students choose their 3 required classes. Each choice is random, \
+based on \[OpenCurlyQuote]popularity weight\[CloseCurlyQuote]. But all \
+choices must avoid time overlap, based on weekly schedule and time period for \
+each class. The code below does it for a student body sB, and weighted class \
+list wCL .\
+\>", "Text",
+ CellChangeTimes->{{3.827998439427587*^9, 3.827998527707405*^9}, {
+   3.827998592886747*^9, 3.82799860847324*^9}, {3.827998962821817*^9, 
+   3.827998980469865*^9}, {3.8280001884877977`*^9, 3.828000204292922*^9}, {
+   3.828000307958693*^9, 3.828000353627899*^9}, {3.828000493312427*^9, 
+   3.828000647774*^9}, {3.828000737506075*^9, 3.8280007703109426`*^9}, {
+   3.828000858412385*^9, 3.828000878797083*^9}, {3.828000909309257*^9, 
+   3.828000979410479*^9}, {3.828001028931533*^9, 3.8280010822328*^9}, {
+   3.828001228215467*^9, 3.828001411028734*^9}, {3.828001445499998*^9, 
+   3.828001582919673*^9}, {3.828001626920423*^9, 3.82800166820784*^9}, {
+   3.828001747071011*^9, 3.8280018023438597`*^9}, {3.828001861418496*^9, 
+   3.8280020985479097`*^9}, {3.828002341376539*^9, 3.828002528204256*^9}, {
+   3.82800262058529*^9, 3.828002699802713*^9}, {3.8280028363607187`*^9, 
+   3.828002882390774*^9}, {3.828003157189838*^9, 3.8280031686636763`*^9}, {
+   3.82800322242765*^9, 3.8280034683449993`*^9}, {3.8280035075066833`*^9, 
+   3.828003510509942*^9}, {3.828005183753419*^9, 3.828005203082951*^9}, {
+   3.828016234976673*^9, 3.828016262998907*^9}, 3.828016394591173*^9, {
+   3.828016892645629*^9, 3.828016934394742*^9}, {3.82801705182421*^9, 
+   3.8280170553919086`*^9}, 3.83005090699399*^9, {3.8324266963031816`*^9, 
+   3.832426702850306*^9}, {3.836330131665225*^9, 3.836330132558076*^9}, {
+   3.8364963193829136`*^9, 3.8364966705122614`*^9}, {3.8364967113249364`*^9, 
+   3.836496753806512*^9}, {3.836579951561552*^9, 3.8365799983773975`*^9}, {
+   3.836735059315794*^9, 3.8367351020334864`*^9}, 3.8376165313436728`*^9, {
+   3.842034250040902*^9, 3.8420343082452354`*^9}, {3.8420343562477603`*^9, 
+   3.842034396271718*^9}, {3.8420344642577953`*^9, 3.8420344874158363`*^9}, 
+   3.867077578093275*^9},
+ CellID->895591059,ExpressionUUID->"91815189-e3ca-4167-8d7c-51abbef204c4"],
+
+Cell["\<\
+Next we generate individual student schedules and class rosters associations: \
+\>", "Text",
+ CellChangeTimes->{{3.8364327095467615`*^9, 3.836432733943533*^9}, {
+   3.8364329639316564`*^9, 3.8364329647275605`*^9}, {3.8364330070324297`*^9, 
+   3.8364330233946896`*^9}, {3.836496851217131*^9, 3.836496858431794*^9}, {
+   3.836496947152049*^9, 3.836496954357757*^9}, {3.8364970098244963`*^9, 
+   3.83649701752689*^9}, {3.8367351342031593`*^9, 3.8367351738995466`*^9}, {
+   3.8367352102797775`*^9, 3.836735213236678*^9}, 3.842034501662761*^9, {
+   3.867147873093472*^9, 3.8671478744297166`*^9}},
+ CellID->169314013,ExpressionUUID->"fc148640-bbb4-4477-9384-c21fa7fab97f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "student", " ", "class", " ", "selection", " ", "for", " ", "individual", 
+    " ", "schedule"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"GenerateClassEnrollment", "[", 
+    RowBox[{"(*", 
+     RowBox[{"Student", " ", "body"}], "*)"}], 
+    RowBox[{"sB_", ",", 
+     RowBox[{"(*", 
+      RowBox[{"weighted", " ", "class", " ", "list"}], "*)"}], "wCL_"}], 
+    "]"}], ":=", "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{"group", " ", "classes", " ", "by", " ", "week"}], "-", 
+        RowBox[{"day", " ", "schedule"}]}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"WDG", "=", 
+        RowBox[{"GroupBy", "[", 
+         RowBox[{"wCL", ",", 
+          RowBox[{
+           RowBox[{"Last", "[", "#", "]"}], "&"}]}], "]"}]}], ",", "Ch1", ",",
+        "Ch2", ",", "Ch12", ",", "Ch3", ",", "rec1", ",", "rec2", ",", 
+       "alc"}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"First", " ", "class", " ", "choice"}], "*)"}], 
+     RowBox[{
+      RowBox[{"Ch1", "=", 
+       RowBox[{"AssociationMap", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"RandomChoice", "[", 
+           RowBox[{
+            RowBox[{"wCL", "[", 
+             RowBox[{"[", 
+              RowBox[{";;", ",", "1"}], "]"}], "]"}], "\[Rule]", "wCL"}], 
+           "]"}], "&"}], ",", "sB"}], "]"}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"Remaining", " ", "classes"}], "*)"}], 
+      RowBox[{"rec1", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"Join", "@@", 
+           RowBox[{"KeyDrop", "[", 
+            RowBox[{"WDG", ",", "#"}], "]"}]}], ")"}], "&"}], "/@", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", "3", "]"}], "]"}], "}"}], "&"}], "/@", "Ch1"}], 
+         ")"}]}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"Second", " ", "class", " ", "choice"}], "*)"}], 
+      RowBox[{"Ch2", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"RandomChoice", "[", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", 
+             RowBox[{";;", ",", "1"}], "]"}], "]"}], "\[Rule]", "#"}], "]"}], 
+         "&"}], "/@", "rec1"}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"First", " ", "two", " ", "choices"}], "*)"}], 
+      RowBox[{"Ch12", "=", 
+       RowBox[{"Merge", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"Ch1", ",", "Ch2"}], "}"}], ",", 
+         RowBox[{"#", "&"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"Remaining", " ", "classes"}], "*)"}], 
+      RowBox[{"rec2", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"Join", "@@", 
+           RowBox[{"KeyDrop", "[", 
+            RowBox[{"WDG", ",", 
+             RowBox[{"Last", "/@", "#"}]}], "]"}]}], ")"}], "&"}], "/@", 
+        RowBox[{"(", "Ch12", ")"}]}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"Third", " ", "choice"}], "*)"}], 
+      RowBox[{"Ch3", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"RandomChoice", "[", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", 
+             RowBox[{";;", ",", "1"}], "]"}], "]"}], "\[Rule]", "#"}], "]"}], 
+         "&"}], "/@", "rec2"}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{"All", " ", "choices"}], "*)"}], 
+      RowBox[{"alc", "=", 
+       RowBox[{"MapThread", "[", 
+        RowBox[{"Append", ",", 
+         RowBox[{"{", 
+          RowBox[{"Ch12", ",", "Ch3"}], "}"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Keep", " ", "class", " ", "labels", " ", "only", " ", "for", " ", 
+        "student", " ", "selection"}], "*)"}], 
+      RowBox[{
+       RowBox[{
+        RowBox[{"#", "[", 
+         RowBox[{"[", 
+          RowBox[{";;", ",", "2"}], "]"}], "]"}], "&"}], "/@", "alc"}]}]}], 
+    "]"}]}]}]], "Code",
+ CellChangeTimes->{{3.8364170469361353`*^9, 3.836417074984144*^9}, {
+   3.836417104989971*^9, 3.8364171108223777`*^9}, {3.836430187211519*^9, 
+   3.8364302133825426`*^9}, {3.836430265679733*^9, 3.836430350653555*^9}, {
+   3.836430417265421*^9, 3.836430525389065*^9}, {3.8364305816975107`*^9, 
+   3.8364307073515778`*^9}, {3.836430738393598*^9, 3.8364307813238297`*^9}, 
+   3.836431294380106*^9, {3.8364313572964973`*^9, 3.836431445696124*^9}, {
+   3.836431477586889*^9, 3.8364316607392488`*^9}, {3.8364318977920065`*^9, 
+   3.836431968192839*^9}, {3.836432113546263*^9, 3.83643216815318*^9}, {
+   3.8364967066815615`*^9, 3.8364967075302906`*^9}, {3.8367353037395887`*^9, 
+   3.8367353043512397`*^9}, {3.8367353565869074`*^9, 
+   3.8367354178117423`*^9}, {3.8420344087633085`*^9, 3.8420344281394215`*^9}, 
+   3.842034622951524*^9, 3.8420354303330984`*^9, 3.8421070423995266`*^9, 
+   3.8428767805128145`*^9},
+ CellTags->"small college",
+ CellLabel->"In[3]:=",
+ CellID->398274568,ExpressionUUID->"5f893bc5-7f9e-41ad-ba6b-3427b349831a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Class", " ", "roster", " ", "function"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ClassEnrollment", "[", 
+     RowBox[{"(*", 
+      RowBox[{"student", " ", "schedules"}], "*)"}], 
+     RowBox[{"sCh_", ",", 
+      RowBox[{"(*", 
+       RowBox[{"class", " ", "list"}], "*)"}], "cL_"}], "]"}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Keys", "@", 
+     RowBox[{"Select", "[", 
+      RowBox[{"sCh", ",", 
+       RowBox[{
+        RowBox[{"MemberQ", "[", 
+         RowBox[{"#", ",", "cL"}], "]"}], "&"}]}], "]"}]}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"Add", " ", "class"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"AddClass", "[", 
+     RowBox[{"(*", 
+      RowBox[{"grouped", " ", "weighted", " ", "class", " ", "schedules"}], 
+      "*)"}], 
+     RowBox[{"wsg_", ",", 
+      RowBox[{"(*", 
+       RowBox[{"current", " ", "choice"}], "*)"}], "cc_"}], "]"}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"zz", "=", 
+         RowBox[{"Join", "@@", 
+          RowBox[{"KeyDrop", "[", 
+           RowBox[{"wsg", ",", "cc"}], "]"}]}]}], ",", "rc"}], "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"rc", "=", 
+        RowBox[{"RandomChoice", "[", 
+         RowBox[{
+          RowBox[{"Values", "@", "zz"}], "->", 
+          RowBox[{"Keys", "@", "zz"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"Append", "[", 
+        RowBox[{"cc", ",", "rc"}], "]"}]}]}], "]"}]}]}]}]], "Code",
+ CellChangeTimes->{{3.8364321804882016`*^9, 3.8364324722661304`*^9}, {
+   3.83643251688186*^9, 3.8364325176138945`*^9}, {3.836485971299666*^9, 
+   3.8364859727147417`*^9}, 3.8364860249186373`*^9, {3.8367354631853437`*^9, 
+   3.8367354708045692`*^9}, {3.8367355151573515`*^9, 3.83673551910544*^9}, 
+   3.8420347651494784`*^9, 3.8585479755806427`*^9},
+ CellTags->"small college",
+ CellLabel->"In[22]:=",
+ CellID->36000015,ExpressionUUID->"9cbc6c9e-9fe6-4fd4-8d94-f065135dd0b1"],
+
+Cell[CellGroupData[{
+
+Cell["Classroom types and  seat assignment", "Subsubsection",
+ CellChangeTimes->{{3.8363306157768087`*^9, 3.836330628385945*^9}, {
+  3.8363329243120947`*^9, 3.8363329295421114`*^9}, {3.8363341105512447`*^9, 
+  3.8363341183444138`*^9}, {3.836334460133525*^9, 3.836334463338005*^9}},
+ CellID->515400097,ExpressionUUID->"8b7bdf73-17f9-4bba-b48e-a157be1deefe"],
+
+Cell[TextData[{
+ "We assume 3 types of classrooms (small, medium, large) of size ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"n", ",", "m"}], ")"}], TraditionalForm]],ExpressionUUID->
+  "2b91eb11-c008-4699-9b8b-1c3b1534623f"],
+ ", needed to accommodate all classes. The required classroom sizes are \
+determined by the mean class enrollment (MCS). Indeed, the (1/3, 2/3) - \
+quantiles for large class-size dispersal  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["w", "L"], ">>", "1"}], TraditionalForm]],ExpressionUUID->
+  "60ce9ffb-3c25-475e-82ab-49061d1f9c66"],
+ ", are approximately equal  to ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox[
+      RowBox[{"2", "MCS"}], "3"], ",", 
+     FractionBox[
+      RowBox[{"4", "MCS"}], "3"]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "eca397a4-3117-4716-9503-220bd5902b00"],
+ ".  In this scheme, classes are partitioned in thirds based on enrollment, \
+and placed into \[OpenCurlyQuote]small\[CloseCurlyQuote], \
+\[OpenCurlyQuote]medium\[CloseCurlyQuote] and \[OpenCurlyQuote]large\
+\[CloseCurlyQuote] rooms. In our case (MCS=20) multiplied by factor 1.2 (not \
+to exceed 80% occupancy), the requisite room-size quantiles ={13.3, 26.6}. "
+}], "Text",
+ CellChangeTimes->{{3.8363329713370643`*^9, 3.8363331131462903`*^9}, {
+   3.8363331887381516`*^9, 3.8363338450610456`*^9}, {3.836333880821473*^9, 
+   3.836333963557245*^9}, {3.8363339980879173`*^9, 3.836334086152481*^9}, {
+   3.83633432056886*^9, 3.836334323205838*^9}, {3.836334418601767*^9, 
+   3.836334428218068*^9}, {3.8363344723588886`*^9, 3.836334657974639*^9}, {
+   3.8364862556741705`*^9, 3.8364863366507125`*^9}, 3.867077620338033*^9, 
+   3.867077658047574*^9, {3.8670777117453365`*^9, 3.867077712673093*^9}, 
+   3.86707775957703*^9, {3.867147889213133*^9, 3.867147891346466*^9}},
+ CellID->197876950,ExpressionUUID->"ca162ff7-f36b-4d21-af82-ec8cc706e6ca"],
+
+Cell[TextData[{
+ StyleBox["Optimal seating code. ",
+  FontWeight->"Bold"],
+ " F",
+ "or a given classroom and student roster (number of students < number of \
+seats), each one could choose a seat randomly. Alternatively, seats could be \
+assigned so as to minimize students\[CloseCurlyQuote] proximity in the room, \
+as a preventive measure to mitigate Covid-like pathogen transmission. The \
+code below attempts to find optimal seating for  \[OpenCurlyQuote]reduced \
+proximity\[CloseCurlyQuote]. It is run iteratively, the next available seat \
+is selected in a partially filled room, to maximize separation from already \
+occupied seats. Distance ",
+ StyleBox["d",
+  FontSlant->"Italic"],
+ " serves as target \[OpenCurlyQuote]space separation\[CloseCurlyQuote] for \
+seat selection, and exponential function ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Exp", "[", 
+    RowBox[{"-", 
+     SubscriptBox["d", 
+      RowBox[{"i", ",", "j"}]]}], "]"}], TraditionalForm]],ExpressionUUID->
+  "aa17a265-6c37-4fcb-9e27-6fd0557bff5c"],
+ " (distance between seats ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"i", ",", "j"}], "}"}], TraditionalForm]],ExpressionUUID->
+  "0fb22332-081e-4184-8c3a-8acc600dc154"],
+ ") assigns the preference weights to unoccupied seats. It is also used later \
+to estimate the probability of infection spreading at adjacent chairs from an \
+infective host at seat ",
+ StyleBox["i",
+  FontSlant->"Italic"],
+ "."
+}], "Text",
+ CellChangeTimes->{
+  3.8280180672744617`*^9, {3.82802385584227*^9, 3.828023865774406*^9}, {
+   3.830051216800618*^9, 3.83005121716787*^9}, {3.8363348009014764`*^9, 
+   3.836334809029743*^9}, {3.8363348418001747`*^9, 3.8363348610895615`*^9}, {
+   3.836335273687*^9, 3.8363354707132916`*^9}, {3.836335501879928*^9, 
+   3.8363355024065228`*^9}, {3.83640313579414*^9, 3.8364032884791765`*^9}, {
+   3.836486437119076*^9, 3.8364864923633814`*^9}, {3.836486536603104*^9, 
+   3.8364868318048916`*^9}, {3.8364868622514925`*^9, 3.836487023741746*^9}, {
+   3.8364872784614515`*^9, 3.8364874884121003`*^9}, {3.836487914474742*^9, 
+   3.836487934045467*^9}, {3.8364879690209227`*^9, 3.836488181579671*^9}, {
+   3.83648821735303*^9, 3.8364882441354628`*^9}, {3.836488292955962*^9, 
+   3.8364884972138643`*^9}, {3.8671482648900256`*^9, 3.8671482652680902`*^9}},
+ CellID->1845186898,ExpressionUUID->"20eeaad8-cb21-4ec0-bdc7-466cd94854b8"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"classroom", " ", "type", " ", "function"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"CRType", "[", 
+      RowBox[{"n_", ",", "m_"}], "]"}], ":=", 
+     RowBox[{"Tuples", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Range", "@", "n"}], ",", 
+        RowBox[{"Range", "@", "m"}]}], "}"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{"create", " ", "classroom", " ", "types"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"Classrooms", "=", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"(*", 
+       RowBox[{"small", " ", "room", " ", "20"}], "*)"}], 
+      RowBox[{
+       RowBox[{"CRType", "[", 
+        RowBox[{"5", ",", "4"}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"medium", " ", "35"}], "*)"}], 
+       RowBox[{"CRType", "[", 
+        RowBox[{"7", ",", "5"}], "]"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"Large", " ", "70"}], "*)"}], 
+       RowBox[{"CRType", "[", 
+        RowBox[{"10", ",", "7"}], "]"}], ",", "\n", 
+       RowBox[{"(*", "auditorium", "*)"}], 
+       RowBox[{"CRType", "[", 
+        RowBox[{"12", ",", "10"}], "]"}]}], "}"}]}], ";"}]}]}]], "Code",
+ CellChangeTimes->{{3.828017711355193*^9, 3.828017720521247*^9}, {
+   3.828017756902564*^9, 3.8280178510136423`*^9}, {3.828017894855373*^9, 
+   3.828017896958188*^9}, {3.828017957009582*^9, 3.828017961894367*^9}, 
+   3.828018061920081*^9, {3.830356825492901*^9, 3.8303568322756157`*^9}, {
+   3.8363316744495544`*^9, 3.836331700502943*^9}, {3.8363317809059405`*^9, 
+   3.8363317953374076`*^9}, {3.836331883688195*^9, 3.836331903572988*^9}, {
+   3.8364863734503307`*^9, 3.8364863744456763`*^9}, 3.836486416330654*^9, 
+   3.8420349053541794`*^9, 3.858424708539508*^9},
+ CellTags->"small college",
+ CellLabel->"In[5]:=",
+ CellID->1077916695,ExpressionUUID->"9bc4a858-74fa-4a98-a3ab-14a621a13e47"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "optimal", " ", "seating", " ", "function", " ", "trying", " ", "to", " ", 
+    "maintain", " ", "distance", " ", "d", " ", "between", " ", "occupied", 
+    " ", "seats"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"OpSeat", "[", 
+     RowBox[{"(*", "room", "*)"}], 
+     RowBox[{"cR_", ",", 
+      RowBox[{"(*", 
+       RowBox[{"target", " ", "distance"}], "*)"}], "d_", ",", 
+      RowBox[{"(*", 
+       RowBox[{"student", " ", "pool"}], "*)"}], "sP_"}], "]"}], ":=", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Block", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"nS", "=", 
+         RowBox[{"Length", "@", "sP"}]}], ",", 
+        RowBox[{"(*", 
+         RowBox[{"running", " ", "seated", " ", "pool"}], "*)"}], "cS", ",", 
+        "cm", ",", "ass"}], "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"initialize", " ", "at", " ", "the", " ", "center"}], "*)"}], 
+      RowBox[{
+       RowBox[{"cS", "=", 
+        RowBox[{"{", 
+         RowBox[{"Round", "[", 
+          RowBox[{
+           RowBox[{"cR", "[", 
+            RowBox[{"[", 
+             RowBox[{"-", "1"}], "]"}], "]"}], "/", "2"}], "]"}], "}"}]}], 
+       ";", "\[IndentingNewLine]", 
+       RowBox[{"Do", "[", 
+        RowBox[{
+         RowBox[{"If", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Length", "@", "cS"}], "<", "nS"}], 
+           RowBox[{"(*", 
+            RowBox[{"total", " ", "pool", " ", "size"}], "*)"}], ",", 
+           "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{"Ubseated", " ", "pool"}], "*)"}], 
+           RowBox[{
+            RowBox[{"cm", "=", 
+             RowBox[{"Complement", "[", 
+              RowBox[{"cR", ",", "cS"}], "]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"ass", "=", 
+             RowBox[{"Sort", "[", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"Total", "[", 
+                 SuperscriptBox["E", 
+                  RowBox[{"-", "#"}]], "]"}], "&"}], "/@", 
+               RowBox[{"AssociationMap", "[", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"Nearest", "[", 
+                   RowBox[{
+                    RowBox[{"cS", "\[Rule]", "\"\<Distance\>\""}], ",", "#", 
+                    ",", 
+                    RowBox[{"{", 
+                    RowBox[{"All", ",", "d"}], "}"}]}], "]"}], "&"}], ",", 
+                 "cm"}], "]"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"AppendTo", "[", 
+             RowBox[{"cS", ",", 
+              RowBox[{"First", "@", 
+               RowBox[{"Keys", "@", "ass"}]}]}], "]"}]}]}], "]"}], ",", 
+         RowBox[{"{", "nS", "}"}]}], "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"AssociationThread", "[", 
+        RowBox[{"cS", ",", "sP"}], "]"}]}]}], "]"}]}], ";"}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{3.858424696847847*^9, 3.858536198050502*^9},
+ CellTags->"small college",
+ CellLabel->"In[7]:=",ExpressionUUID->"8f6e0c2e-1496-4ee6-a92e-28807cdb1211"],
+
+Cell["\<\
+The code below takes all classrooms and finds a suitable room for a class \
+list CL, with excess capacity 20%.\
+\>", "Text",
+ CellChangeTimes->{
+  3.830051102379921*^9, 3.836487106538387*^9, 3.836487148530771*^9, {
+   3.836487179242489*^9, 3.8364872661892595`*^9}, {3.836497937135414*^9, 
+   3.8364981451203647`*^9}, {3.8420371167624454`*^9, 
+   3.8420372537255387`*^9}, {3.8420373385167*^9, 3.842037351605627*^9}, {
+   3.8670880986083975`*^9, 3.867088100164652*^9}, 3.8671486185127053`*^9},
+ CellID->1622155372,ExpressionUUID->"dbeeabc2-dd1e-4295-9ee9-ad7228e7e18e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "seating", " ", "association", " ", "based", " ", "on", " ", "20", "%", 
+    " ", "excess", " ", "capacity"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Seating", "[", "\n", 
+    RowBox[{"(*", 
+     RowBox[{"class", " ", "enrollment", " ", "list"}], "*)"}], 
+    RowBox[{"cenR_", ",", 
+     RowBox[{"(*", 
+      RowBox[{"classroom", " ", "types"}], "*)"}], " ", "Crt_"}], "]"}], ":=",
+    "\n", 
+   RowBox[{"Module", "[", "\n", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"CRChoice", ",", 
+       RowBox[{"(*", 
+        RowBox[{"seats", " ", "association"}], "*)"}], "als"}], "}"}], ",", 
+     "\n", 
+     RowBox[{"(*", 
+      RowBox[{"Classroom", "  ", "choice"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"CRChoice", "[", 
+        RowBox[{"(*", 
+         RowBox[{"all", " ", "classrooms"}], "*)"}], 
+        RowBox[{"acr_", ",", 
+         RowBox[{"(*", 
+          RowBox[{"class", " ", "list"}], "*)"}], "CL_"}], "]"}], ":=", 
+       RowBox[{"SelectFirst", "[", 
+        RowBox[{"acr", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Length", "[", "#", "]"}], ">", 
+           RowBox[{"1.2", " ", 
+            RowBox[{"Length", "@", "CL"}]}]}], "&"}]}], "]"}]}], ";", "\n", 
+      RowBox[{"als", "=", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"CRChoice", "[", 
+          RowBox[{"Crt", ",", "#"}], "]"}], "&"}], "/@", "cenR"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Merge", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"als", ",", "cenR"}], "}"}], ",", 
+        RowBox[{
+         RowBox[{"OpSeat", "[", 
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "1", "]"}], "]"}], ",", "2", ",", 
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}]}], "]"}], "&"}]}], "]"}]}]}], 
+    "]"}], "    "}]}]], "Input",
+ InitializationCell->True,
+ CellChangeTimes->{3.858424696847847*^9, 3.858536198050502*^9},
+ CellTags->"small college",
+ CellLabel->"In[8]:=",ExpressionUUID->"51b6d798-343f-4df6-9d8b-352ffbc46023"],
+
+Cell["\<\
+The complete class schedule can now be generated, where each class is \
+assigned its weekly schedule and student roster with seating.\
+\>", "Text",
+ CellChangeTimes->{{3.8364972097899704`*^9, 3.836497227904545*^9}, {
+  3.8364975060149517`*^9, 3.8364975158107204`*^9}, {3.8364981099843035`*^9, 
+  3.836498111053441*^9}, {3.8364981600763392`*^9, 3.8364981801277623`*^9}, {
+  3.842103559298211*^9, 3.842103567235976*^9}, {3.8670779560979967`*^9, 
+  3.8670779719211655`*^9}},
+ CellID->334014416,ExpressionUUID->"5275f7c5-b264-41c6-83e6-fba67941f1a1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Inputs", "Subsection",
+ CellChangeTimes->{{3.827997005690892*^9, 3.827997009908152*^9}, {
+   3.8286215084806232`*^9, 3.828621511727729*^9}, {3.8286219099603167`*^9, 
+   3.828621910742906*^9}, {3.8303882081948233`*^9, 3.8303882171541443`*^9}, {
+   3.8390232563974047`*^9, 3.839023261797969*^9}, 3.8428738848244023`*^9, 
+   3.8428757312144427`*^9, {3.843245009287553*^9, 3.843245010344573*^9}, {
+   3.8585305958086495`*^9, 3.8585305978934374`*^9}},
+ CellID->1070887832,ExpressionUUID->"630a7bb3-f53d-4219-bc2a-ecf095d7981f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Class", " ", "TimeGrids", " ", "and", " ", "daily", " ", 
+     RowBox[{"periods", ":", " ", "MWF"}]}], ",", " ", 
+    RowBox[{"and", " ", "TuTH"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"tMW", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<M\>\"", ",", "\"\<W\>\"", ",", "\"\<F\>\""}], "}"}], 
+         ",", "i"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", 
+         RowBox[{"(*", 
+          RowBox[{
+          "number", " ", "of", " ", "MWF", " ", "time", " ", "periods"}], 
+          "*)"}], "7"}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"tTH", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\"\<T\>\"", ",", "\"\<R\>\""}], "}"}], ",", "i"}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", 
+         RowBox[{"(*", 
+          RowBox[{
+          "number", " ", "of", " ", "TuTh", " ", "time", " ", "periods"}], 
+          "*)"}], "5"}], "}"}]}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"NumberOfStudents", " ", "=", " ", "60000"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"MeanClassSize", " ", "=", " ", "30"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"MinClassWeight", " ", "=", " ", "1"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"MaxClassWeight", " ", "=", " ", "10"}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"MinClassSize", "=", "6"}], ";"}]}]}]], "Code",
+ InitializationCell->False,
+ CellChangeTimes->{{3.8364257548767004`*^9, 3.836425920282552*^9}, {
+   3.8364267213729944`*^9, 3.8364267424855127`*^9}, {3.8364268764603815`*^9, 
+   3.8364268947474904`*^9}, {3.836427122042817*^9, 3.836427186060669*^9}, {
+   3.8364274548121476`*^9, 3.836427469243532*^9}, {3.8364282549838715`*^9, 
+   3.8364282577993083`*^9}, {3.8364288092640114`*^9, 3.836428812908275*^9}, 
+   3.8364288530848455`*^9, {3.8364298522051716`*^9, 3.83642986381507*^9}, {
+   3.836496222099691*^9, 3.8364962427174397`*^9}, {3.836664732585867*^9, 
+   3.8366647640549994`*^9}, {3.839023717287545*^9, 3.8390237608641186`*^9}, {
+   3.8420338092465835`*^9, 3.842033837752769*^9}, {3.8585347389280343`*^9, 
+   3.8585347480382357`*^9}, {3.858535944894945*^9, 3.858535948473959*^9}, 
+   3.8585479277536707`*^9, {3.861110587520952*^9, 3.861110589101178*^9}},
+ CellID->15630296,ExpressionUUID->"d597d079-781e-4163-988d-6479ea75d155"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Run", "Subsection",
+ CellChangeTimes->{{3.8585464515738072`*^9, 
+  3.8585464523236303`*^9}},ExpressionUUID->"a40bd39c-4306-4515-a07e-\
+56582b8f6c29"],
+
+Cell[CellGroupData[{
+
+Cell["Class schedule", "Subsubsection",
+ CellChangeTimes->{{3.828622017766348*^9, 3.828622024437361*^9}, {
+   3.830438875876522*^9, 3.8304388776929483`*^9}, 3.8359189646107244`*^9, {
+   3.842700621802925*^9, 3.842700653506136*^9}, {3.8585306554904475`*^9, 
+   3.858530658286722*^9}},
+ CellID->1729692915,ExpressionUUID->"16f82a6f-8f6a-4c4c-b3c7-9c3bbe72355e"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"construct", " ", "student", " ", "body"}], "*)"}], "\n", 
+  RowBox[{
+   RowBox[{"StudentBody", "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"\"\<S\>\"", "<>", 
+       RowBox[{"ToString", "@", "#"}]}], "&"}], "/@", 
+     RowBox[{"Range", "@", 
+      RowBox[{"(", "NumberOfStudents", ")"}]}]}]}], ";"}]}]], "Input",
+ CellChangeTimes->{
+  3.842876219045026*^9, {3.842876261815381*^9, 3.8428762661556635`*^9}, 
+   3.842880727071164*^9, 3.8581181192865515`*^9, 3.858423468721998*^9, {
+   3.8584267774393826`*^9, 3.8584267881805925`*^9}, 3.8585309300474358`*^9, {
+   3.858532697802891*^9, 3.8585327313819866`*^9}, 3.8585446738588104`*^9, 
+   3.8585473527778606`*^9},
+ CellLabel->"In[16]:=",
+ CellID->76725332,ExpressionUUID->"f6b9946a-5041-495f-8632-7d1d4bac9529"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"ClasL", "=", 
+    RowBox[{"Array", "[", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["CL", "#"], "&"}], ",", 
+      RowBox[{"Round", "[", 
+       FractionBox[
+        RowBox[{"NumberOfStudents", " ", "*", " ", "3", " ", 
+         RowBox[{"(*", 
+          RowBox[{"number", " ", "of", " ", 
+           RowBox[{"classes", "/", "student"}]}], "*)"}]}], "MeanClassSize"], 
+       "]"}]}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Weighted", " ", "class", " ", "schedule", " ", "with", " ", "time", " ", 
+    "slots", " ", "and", " ", 
+    RowBox[{"popularity", "/", "enrollment"}], " ", "weights"}], 
+   "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"ClassSched", "=", "\[IndentingNewLine]", 
+    RowBox[{"WeekDayS", "[", 
+     RowBox[{"ClasL", ",", "tMW", ",", "tTH", ",", 
+      RowBox[{"(*", 
+       RowBox[{"Weight", " ", "scale"}], "*)"}], "10.", ",", 
+      RowBox[{"(*", 
+       RowBox[{"fraction", " ", "of", " ", "MWF"}], "*)"}], ".6"}], "]"}]}], 
+   ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Student", " ", "schedule"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"StuScd", "=", 
+    RowBox[{"GenerateClassEnrollment", "[", 
+     RowBox[{"StudentBody", ",", "ClassSched"}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{"Class", " ", "roster"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ClassRost", "=", 
+   RowBox[{"AssociationMap", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"ClassEnrollment", "[", 
+       RowBox[{"StuScd", ",", "#"}], "]"}], "&"}], ",", "ClasL"}], "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{
+  3.842876219045026*^9, {3.842876261815381*^9, 3.8428762661556635`*^9}, 
+   3.842880727071164*^9, 3.8581181192865515`*^9, 3.858423468721998*^9, {
+   3.8584267774393826`*^9, 3.8584267881805925`*^9}, 3.8585309300474358`*^9, {
+   3.858532697802891*^9, 3.8585327313819866`*^9}, 3.8585446738588104`*^9, 
+   3.8585473527778606`*^9, {3.8585478854270754`*^9, 3.8585478946190186`*^9}},
+ CellLabel->"In[17]:=",ExpressionUUID->"4fb132c7-2892-405c-a207-d0afc3e2f74f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Reschedule small classes", "Subsubsection",
+ CellChangeTimes->{{3.8585450007504277`*^9, 3.858545212234775*^9}, {
+  3.8585452472484975`*^9, 3.858545256619985*^9}, {3.8585452905237474`*^9, 
+  3.858545338448437*^9}, {3.8585453781783943`*^9, 
+  3.8585454599411488`*^9}},ExpressionUUID->"154c62c9-0e7d-4df6-a52b-\
+88e2980e2806"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Block", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"sC", ",", "canC", ",", "reS", ",", "ch12", ",", "WDG"}], "}"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Small", " ", "classes"}], "*)"}], "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"sC", "=", 
+      RowBox[{"Select", "[", 
+       RowBox[{"ClassRost", ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Length", "@", "#"}], "<", "MinClassSize"}], "&"}]}], 
+       "]"}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Cancelled", " ", "classes"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"canC", "=", 
+      RowBox[{"Keys", "@", "sC"}]}], ";", "\n", 
+     RowBox[{"(*", 
+      RowBox[{"rescheduled", " ", "student", " ", "pool"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"reS", "=", 
+      RowBox[{"Union", "@@", 
+       RowBox[{"Values", "@", "sC"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"ch12", "=", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Complement", "[", 
+         RowBox[{"#", ",", "canC"}], "]"}], "&"}], "/@", 
+       RowBox[{"KeyTake", "[", 
+        RowBox[{"StuScd", ",", "reS"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Clean", " ", "class", " ", "sched"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"CleanCS", "=", 
+      RowBox[{"KeyDrop", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"#", "[", 
+            RowBox[{"[", "2", "]"}], "]"}], "->", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"#", "[", 
+              RowBox[{"[", "1", "]"}], "]"}], ",", 
+             RowBox[{"#", "[", 
+              RowBox[{"[", "3", "]"}], "]"}]}], "}"}]}], "&"}], "/@", 
+         "ClassSched"}], ",", "canC"}], "]"}]}], ";", 
+     RowBox[{"WDG", "=", 
+      RowBox[{"GroupBy", "[", 
+       RowBox[{"CleanCS", ",", 
+        RowBox[{
+         RowBox[{"Last", "[", "#", "]"}], "&"}], ",", 
+        RowBox[{
+         RowBox[{"First", "/@", "#"}], "&"}]}], "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Adjusted", " ", "student", " ", "schedule"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"AdSch", "=", 
+      RowBox[{"Join", "[", 
+       RowBox[{"StuScd", ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"AddClass", "[", 
+           RowBox[{"WDG", ",", "#"}], "]"}], "&"}], "/@", "ch12"}]}], "]"}]}],
+      ";", "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Adjusted", " ", "Class", " ", "roster"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"AdCRost", "=", 
+      RowBox[{"AssociationMap", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"ClassEnrollment", "[", 
+          RowBox[{"AdSch", ",", "#"}], "]"}], "&"}], ",", 
+        RowBox[{"Keys", "@", "CleanCS"}]}], "]"}]}]}]}], "]"}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.8585450007504277`*^9, 3.858545212234775*^9}, {
+  3.8585452472484975`*^9, 3.858545256619985*^9}, {3.8585452905237474`*^9, 
+  3.858545338448437*^9}, {3.8585453781783943`*^9, 3.8585454740486555`*^9}, {
+  3.858545560281587*^9, 3.858545570653535*^9}},
+ CellLabel->"In[24]:=",ExpressionUUID->"8b85581c-a689-442f-a5e8-49c9cedc4ff0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{"Complete", " ", "class", " ", "schedule"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"CompClaS", "=", "\[IndentingNewLine]", 
+    RowBox[{"Merge", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"[", 
+            RowBox[{"2", ",", "1"}], "]"}], "]"}], "&"}], "/@", "CleanCS"}], 
+        ",", 
+        RowBox[{"Seating", "[", 
+         RowBox[{"AdCRost", ",", "Classrooms"}], "]"}]}], "}"}], ",", 
+      RowBox[{"#", "&"}]}], "]"}]}], ";"}]}]], "Input",
+ CellChangeTimes->{
+  3.842876219045026*^9, {3.842876261815381*^9, 3.8428762661556635`*^9}, 
+   3.842880727071164*^9, 3.8581181192865515`*^9, 3.858423468721998*^9, {
+   3.8584235670062094`*^9, 3.8584235861048794`*^9}, 3.8584236268347425`*^9, {
+   3.858531462116974*^9, 3.8585314723894606`*^9}, {3.858544274147797*^9, 
+   3.8585442749444723`*^9}, {3.8585445332318826`*^9, 
+   3.8585445437707777`*^9}, {3.8585454887358866`*^9, 3.8585454962770195`*^9}, 
+   3.858546051066887*^9, {3.858547996082743*^9, 3.858547997052347*^9}, 
+   3.8671682757201443`*^9},ExpressionUUID->"38d4f7d7-fb8b-46cc-9914-\
+c92533f0d03b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Export", " ", "student", " ", "body", " ", "and", " ", "class", " ", 
+    "schedule"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+   "SetDirectory", "[", "\"\<C:\\\\College\\\\Coding\\\\Campus\>\"", "]"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"StudentBody", ",", "CompClaS"}], "}"}], ">>", 
+    "\"\<Class schedule 3000\>\""}]}]}]], "Input",
+ Evaluatable->False,
+ CellChangeTimes->{{3.8232809017211623`*^9, 3.8232809277525816`*^9}, {
+   3.8585313061190615`*^9, 3.8585313064783554`*^9}, 3.858531379041442*^9, 
+   3.8585460863792706`*^9, 3.8585480463016586`*^9, {3.8611106096920867`*^9, 
+   3.861110631888647*^9}, {3.8671682921440296`*^9, 
+   3.8671683166603613`*^9}},ExpressionUUID->"07b47257-3b52-4376-a176-\
+8b2637a826dc"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+},
+WindowToolbars->"EditBar",
+WindowSize->{1024.5, 513.75},
+WindowMargins->{{-6, Automatic}, {Automatic, -6}},
+TaggingRules-><|
+ "ToolsOpen" -> True, "StatusMessage" -> "", 
+  "SubmissionReviewData" -> <|"Review" -> False|>|>,
+FrontEndVersion->"13.0 for Microsoft Windows (64-bit) (February 4, 2022)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"2f2acb0f-c220-49fc-a367-c0962b24ddc3"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "small college"->{
+  Cell[17516, 365, 5094, 131, 261, "Code",ExpressionUUID->"5f893bc5-7f9e-41ad-ba6b-3427b349831a",
+   CellTags->"small college",
+   CellID->398274568],
+  Cell[22613, 498, 2080, 56, 173, "Code",ExpressionUUID->"9cbc6c9e-9fe6-4fd4-8d94-f065135dd0b1",
+   CellTags->"small college",
+   CellID->36000015],
+  Cell[29378, 655, 1975, 47, 173, "Code",ExpressionUUID->"9bc4a858-74fa-4a98-a3ab-14a621a13e47",
+   CellTags->"small college",
+   CellID->1077916695],
+  Cell[31356, 704, 3109, 79, 210, "Input",ExpressionUUID->"8f6e0c2e-1496-4ee6-a92e-28807cdb1211",
+   InitializationCell->True,
+   CellTags->"small college"],
+  Cell[35048, 797, 2110, 59, 197, "Input",ExpressionUUID->"51b6d798-343f-4df6-9d8b-352ffbc46023",
+   InitializationCell->True,
+   CellTags->"small college"]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"small college", 50532, 1209}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 174, 3, 98, "Title",ExpressionUUID->"acc1ea73-d60d-4b01-84cb-adf3163a676d"],
+Cell[757, 27, 148, 3, 53, "Subtitle",ExpressionUUID->"25df4907-e4a2-4f4f-8d58-1043e7afe25d"],
+Cell[CellGroupData[{
+Cell[930, 34, 194, 2, 54, "Subsection",ExpressionUUID->"ff0d0143-2f4e-43d1-adfd-89b0c8bf758c",
+ CellID->198915662],
+Cell[1127, 38, 2465, 42, 219, "Text",ExpressionUUID->"df0c50ef-0802-46d4-9417-b3d02256c458",
+ CellID->655908605],
+Cell[CellGroupData[{
+Cell[3617, 84, 471, 6, 45, "Subsubsection",ExpressionUUID->"134be474-1115-43e8-9f07-554b24c080e4",
+ CellID->377402036],
+Cell[4091, 92, 2055, 34, 58, "Text",ExpressionUUID->"779de1e3-118b-49b4-8ca1-f83b52a6638c",
+ CellID->1940041763],
+Cell[6149, 128, 1443, 28, 150, "Text",ExpressionUUID->"9202af42-e8c9-49d2-aeab-bd67ff6d8f0b",
+ CellID->25937581],
+Cell[7595, 158, 1852, 29, 53, "Text",ExpressionUUID->"32bd941c-6167-496a-8ac9-d6ca68cb9d09",
+ CellID->1118430415],
+Cell[9450, 189, 636, 10, 74, "Text",ExpressionUUID->"946e9a98-dbef-4eba-8f7b-1e7c61f1ac94",
+ CellID->60639511]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10135, 205, 530, 7, 54, "Subsection",ExpressionUUID->"373bddcf-29ff-4c51-85e3-6e5833fde6be",
+ CellID->1514486586],
+Cell[10668, 214, 3946, 103, 315, "Input",ExpressionUUID->"c92c863f-7d8f-4721-95b6-3cca9af6376b",
+ InitializationCell->True],
+Cell[14617, 319, 2217, 32, 58, "Text",ExpressionUUID->"91815189-e3ca-4167-8d7c-51abbef204c4",
+ CellID->895591059],
+Cell[16837, 353, 676, 10, 35, "Text",ExpressionUUID->"fc148640-bbb4-4477-9384-c21fa7fab97f",
+ CellID->169314013],
+Cell[17516, 365, 5094, 131, 261, "Code",ExpressionUUID->"5f893bc5-7f9e-41ad-ba6b-3427b349831a",
+ CellTags->"small college",
+ CellID->398274568],
+Cell[22613, 498, 2080, 56, 173, "Code",ExpressionUUID->"9cbc6c9e-9fe6-4fd4-8d94-f065135dd0b1",
+ CellTags->"small college",
+ CellID->36000015],
+Cell[CellGroupData[{
+Cell[24718, 558, 356, 4, 45, "Subsubsection",ExpressionUUID->"8b7bdf73-17f9-4bba-b48e-a157be1deefe",
+ CellID->515400097],
+Cell[25077, 564, 1919, 39, 107, "Text",ExpressionUUID->"ca162ff7-f36b-4d21-af82-ec8cc706e6ca",
+ CellID->197876950],
+Cell[26999, 605, 2376, 48, 151, "Text",ExpressionUUID->"20eeaad8-cb21-4ec0-bdc7-466cd94854b8",
+ CellID->1845186898],
+Cell[29378, 655, 1975, 47, 173, "Code",ExpressionUUID->"9bc4a858-74fa-4a98-a3ab-14a621a13e47",
+ CellTags->"small college",
+ CellID->1077916695],
+Cell[31356, 704, 3109, 79, 210, "Input",ExpressionUUID->"8f6e0c2e-1496-4ee6-a92e-28807cdb1211",
+ InitializationCell->True,
+ CellTags->"small college"],
+Cell[34468, 785, 577, 10, 35, "Text",ExpressionUUID->"dbeeabc2-dd1e-4295-9ee9-ad7228e7e18e",
+ CellID->1622155372],
+Cell[35048, 797, 2110, 59, 197, "Input",ExpressionUUID->"51b6d798-343f-4df6-9d8b-352ffbc46023",
+ InitializationCell->True,
+ CellTags->"small college"],
+Cell[37161, 858, 556, 9, 35, "Text",ExpressionUUID->"5275f7c5-b264-41c6-83e6-fba67941f1a1",
+ CellID->334014416]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37766, 873, 528, 7, 54, "Subsection",ExpressionUUID->"630a7bb3-f53d-4219-bc2a-ecf095d7981f",
+ CellID->1070887832],
+Cell[38297, 882, 2570, 62, 157, "Code",ExpressionUUID->"d597d079-781e-4163-988d-6479ea75d155",
+ InitializationCell->False,
+ CellID->15630296]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40904, 949, 155, 3, 54, "Subsection",ExpressionUUID->"a40bd39c-4306-4515-a07e-56582b8f6c29"],
+Cell[CellGroupData[{
+Cell[41084, 956, 359, 5, 45, "Subsubsection",ExpressionUUID->"16f82a6f-8f6a-4c4c-b3c7-9c3bbe72355e",
+ CellID->1729692915],
+Cell[41446, 963, 813, 19, 48, "Input",ExpressionUUID->"f6b9946a-5041-495f-8632-7d1d4bac9529",
+ CellID->76725332],
+Cell[42262, 984, 2081, 54, 180, "Input",ExpressionUUID->"4fb132c7-2892-405c-a207-d0afc3e2f74f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44380, 1043, 329, 5, 45, "Subsubsection",ExpressionUUID->"154c62c9-0e7d-4df6-a52b-88e2980e2806"],
+Cell[44712, 1050, 3239, 86, 295, "Input",ExpressionUUID->"8b85581c-a689-442f-a5e8-49c9cedc4ff0"],
+Cell[47954, 1138, 1220, 29, 67, "Input",ExpressionUUID->"38d4f7d7-fb8b-46cc-9914-c92533f0d03b"],
+Cell[49177, 1169, 810, 20, 67, "Input",ExpressionUUID->"07b47257-3b52-4376-a176-8b2637a826dc",
+ Evaluatable->False]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
